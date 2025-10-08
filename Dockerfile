@@ -1,4 +1,4 @@
-FROM docker pull ghcr.io/maiolino-au/monocle:v1.0.1
+FROM ghcr.io/maiolino-au/monocle:v1.0.1
 
 
 # RUN R -e "intall.packages('')"
