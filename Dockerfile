@@ -1,3 +1,9 @@
-FORM ghcr.io/maiolino-au/scrnaseq_tutorial:v0.0.4
+FROM docker pull ghcr.io/maiolino-au/monocle:v1.0.1
 
-RUN R -e "intall.packages('')"
+
+# RUN R -e "intall.packages('')"
+
+
+
+ENV SHELL=/bin/bash
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=9999", "--no-browser", "--allow-root", "--ServerApp.allow_origin='*'", "--ServerApp.token=''"]
