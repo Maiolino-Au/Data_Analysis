@@ -6,4 +6,4 @@ FROM docker pull ghcr.io/maiolino-au/monocle:v1.0.1
 
 
 ENV SHELL=/bin/bash
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=9999", "--no-browser", "--allow-root", "--ServerApp.allow_origin='*'", "--ServerApp.token=''"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8787", "--no-browser", "--allow-root", "--ServerApp.allow_origin='*'", "--ServerApp.token=''"]
