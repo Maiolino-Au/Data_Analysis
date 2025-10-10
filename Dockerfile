@@ -1,6 +1,6 @@
 FROM ghcr.io/maiolino-au/monocle:v1.0.1
 
-
+RUN R -e "devtools::install_github('jbisanz/qiime2R')"
 # RUN R -e "intall.packages('')"
 
 
