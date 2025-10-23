@@ -84,6 +84,10 @@ per far sì che siano
 
 separate
 
+importante 
+* per
+* liste
+
 triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
 
 ```{r, eval=T, echo=T}
