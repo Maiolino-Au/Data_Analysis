@@ -1,0 +1,246 @@
+---
+title: "Data Analysis (Prof. Ugo Ala) - R Practical 1"
+author: "Fontanilla Natasha, Maiolino Aurelio, Mercadante Marianna"
+date: "22-10-2025"
+output:
+  pdf_document:
+    keep_tex: true
+    toc: true
+    toc_depth: 2
+header-includes:
+  - \usepackage{fvextra}
+  - \usepackage{fancyhdr}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere=true,commandchars=\\\{\}}
+  - \fvset{breaklines=true, breakanywhere=true}
+  - \renewcommand{\contentsname}{Index}
+  - \pagestyle{fancy}
+  - \fancyhead[R]{}
+  - \fancyhead[C]{Data Analysis - R Practical 1 - `r rmarkdown::metadata$date` - Fontanilla N., Maiolino A., Mercadante M.}
+  - \fancyfoot[C]{\thepage}
+---
+
+\thispagestyle{empty}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+# Introduction
+
+The exrcise was run in a Docker, the image can be pulled from GitHub:
+
+* with JupyterLab
+
+```sh
+docker pull ghcr.io/maiolino-au/data_analysis:v0.1.0
+```
+
+* with Rstudio
+
+```sh
+docker pull ghcr.io/maiolino-au/data_analysis:v0.1.1
+```
+
+You can run it with (regardless of the version):
+
+* In Windows
+
+```powershell
+@echo off
+set "CURRENT_DIR=%cd%"
+docker run -it --rm -p 8787:8787 -v "%CURRENT_DIR%:/sharedFolder" ghcr.io/maiolino-au/data_analysis
+```
+
+* In Linux / MacOS
+
+```sh
+docker run -it --rm -p 8787:8787 -v .:/sharedFolder ghcr.io/maiolino-au/data_analysis
+```
+
+Repository link: https://github.com/Maiolino-Au/Data_Analysis
+
+The datas used are availabe at:
+
+The scripts assume that the working directory is the same where the data are stored.
+
+\newpage
+
+# ======= Aurelio =======
+
+# Title
+text text text
+
+* lista
+* lista
+
+text text text
+
+1. lista numerata
+2. lista numerata
+1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
+
+bisogna mettere una rigavuota tra du cose 
+per far sì che siano
+
+separate
+
+triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+
+```{r, eval=T, echo=T}
+mm <- c("m", "m")
+paste(mm[1], mm[2], sep = " - ")
+```
+
+una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+
+```{r, eval=T, echo=T}
+paste(mm[1], mm[2], sep = " - ")
+```
+
+
+
+## Subtitle
+
+un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
+
+\newpage
+
+# ci
+
+## sono
+
+### 6
+
+#### livelli
+
+##### di 
+
+###### titoli
+
+####### :(
+
+############################ il resto lo considera come un commento
+
+e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+
+\newpage
+
+# ======= Marianna =======
+
+# Title
+text text text
+
+* lista
+* lista
+
+text text text
+
+1. lista numerata
+2. lista numerata
+1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
+
+bisogna mettere una rigavuota tra du cose 
+per far sì che siano
+
+separate
+
+triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+
+```{r, eval=T, echo=T}
+mm <- c("m", "m")
+paste(mm[1], mm[2], sep = " - ")
+```
+
+una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+
+```{r, eval=T, echo=T}
+paste(mm[1], mm[2], sep = " - ")
+```
+
+
+
+## Subtitle
+
+un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
+
+\newpage
+
+# ci
+
+## sono
+
+### 6
+
+#### livelli
+
+##### di 
+
+###### titoli
+
+####### :(
+
+############################ il resto lo considera come un commento
+
+e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+
+\newpage
+
+# ======= Natasha =======
+
+# Title
+text text text
+
+* lista
+* lista
+
+text text text
+
+1. lista numerata
+2. lista numerata
+1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
+
+bisogna mettere una rigavuota tra du cose 
+per far sì che siano
+
+separate
+
+triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+
+```{r, eval=T, echo=T}
+mm <- c("m", "m")
+paste(mm[1], mm[2], sep = " - ")
+```
+
+una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+
+```{r, eval=T, echo=T}
+paste(mm[1], mm[2], sep = " - ")
+```
+
+
+
+## Subtitle
+
+un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
+
+\newpage
+
+# ci
+
+## sono
+
+### 6
+
+#### livelli
+
+##### di 
+
+###### titoli
+
+####### :(
+
+############################ il resto lo considera come un commento
+
+e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+
+\newpage
