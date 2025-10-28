@@ -1,0 +1,97 @@
+---
+title: "Data Analysis (Prof. Ugo Ala) - R Practical N"
+author: "Cognome Nome, Cognome Nome, Cognome Nome"
+date: "01-01-0000"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: true
+    toc: true
+    toc_depth: 2
+header-includes:
+  - \usepackage{fvextra}
+  - \usepackage{fancyhdr}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere=true,commandchars=\\\{\}}
+  - \fvset{breaklines=true, breakanywhere=true}
+  - \renewcommand{\contentsname}{Index}
+  - \AtBeginDocument{
+      \pagestyle{fancy}
+      \fancyhead[L]{}
+      \fancyhead[R]{}
+      \fancyhead[C]{Data Analysis - R Practical N - 01-01-0000 - Cognome N., Cognome N., Cognome N.}
+      \fancyfoot[C]{\thepage}
+      \renewcommand{\sectionmark}[1]{}
+      \renewcommand{\subsectionmark}[1]{}
+    }
+---
+
+\thispagestyle{empty}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+# Introduction
+
+## Environment
+
+The exrcise was run in a Docker, the image can be pulled from GitHub:
+
+```sh
+docker pull ghcr.io/maiolino-au/data_analysis:latest
+```
+
+You can run it with (regardless of the version):
+
+* In Windows
+
+```powershell
+@echo off
+set "CURRENT_DIR=%cd%"
+docker run -it --rm -p 8787:8787 -v "%CURRENT_DIR%:/sharedFolder" ghcr.io/maiolino-au/data_analysis:latest
+```
+
+* In Linux / MacOS
+
+```sh
+docker run -it --rm -p 8787:8787 -v .:/sharedFolder ghcr.io/maiolino-au/data_analysis:latest
+```
+
+Repository link: https://github.com/Maiolino-Au/Data_Analysis
+
+The datas used are availabe at:
+
+The scripts assume that the working directory is the same where the data are stored.
+
+\newpage
+
+## Working directory and Packages
+
+First of all, we need to set the correct working directory: all the commands assume that the datas are stored in the working directory. I worked in a docker container to which i have shared a directory from my PC, called `/sharedFolder` inside the docker. In the directory there is one specific for this lesson, called `Practical_1`. Therefore:
+
+```{r, eval=T, echo=T}
+setwd("/sharedFolder/Practical_1/")
+```
+
+Then we need to load the packages we are going to use. I used `suppressPackageStartupMessages()` to avoid printing all the startup messages of each package.
+
+```{r, eval=T, echo=T}
+suppressPackageStartupMessages({
+    library(phyloseq)
+    library(dplyr)
+    library(tidyr)
+    library(stringr)
+    library(microbiome)
+    library(microbial)
+    library(vegan)
+    library(usedist)
+    library(ggplot2)
+    library(nortest)
+    library(car)
+})
+```
+
+\newpage
+
+## Notes
+
