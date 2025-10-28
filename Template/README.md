@@ -6,7 +6,7 @@ Here you find the [Rmarkdown template](template.Rmd) for the sbobina and the [pd
 2. [Introduction](#introduction)
 3. [Notes and Suggestions](#notes-and-suggestions)
 4. [Render](#render)
-5. [WWarnings](#warnings)
+5. [Warnings](#warnings)
 
 ## Header
 
