@@ -5,6 +5,8 @@ Here you find the [Rmarkdown template](template.Rmd) for the sbobina and the [pd
 1. [Header](#header)
 2. [Introduction](#introduction)
 3. [Notes and Suggestions](#notes-and-suggestions)
+4. [Render](#render)
+5. [WWarnings](#warnings)
 
 ## Header
 
@@ -51,6 +53,8 @@ header-includes:
 ```
 
 ## Introduction
+
+Leave this section
 
 ````markdown
 # Introduction
@@ -122,15 +126,13 @@ suppressPackageStartupMessages({
 \newpage
 ````
 
-# Notes and suggestions
+## Notes and suggestions
 
+There are up to 6 levels of titles (from # to ######), only level 1 and 2 will be shown in the table of content (Index), you can cahge it with toc_depth
 
-there are up to 6 levels of titles (from # to ######), only level 1 and 2 will be shown in the table of content (Index), you can cahge it with toc_depth
+Use `\newpage` for ending the page 
 
-# Render
-
-`rmarkdown::render('/sharedFolder/Practical_1/Data_analysis_R_1.Rmd', output_dir = '/sharedFolder/Practical_1/')`
-
+````markdown
 # Title
 text text text
 
@@ -143,14 +145,14 @@ text text text
 2. lista numerata
 1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
 
-bisogna mettere una rigavuota tra du cose 
+bisogna mettere una rigavuota tra due cose 
 per far sì che siano
 
-separate
+separate 
 
 importante 
 * per
-* liste
+* liste (specifico per Rmarkdown, in normal markdown you can omit the empty line right before the list)
 
 triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
 
@@ -164,6 +166,37 @@ una variabile definita in un blocco si salva nel documento e può essere richiam
 ```{r, eval=T, echo=T}
 paste(mm[1], mm[2], sep = " - ")
 ```
+````
+
+## Render
+
+`rmarkdown::render('/sharedFolder/Practical_1/Data_analysis_R_1.Rmd', output_dir = '/sharedFolder/Practical_1/')`
 
 ## Warnings
+This gave me an error that made the render fail: it generated a warning containing some invisible characters. you can solve it with `suppressMessages` and `suppressWarnings`
 
+
+```R
+wilcox.test(xx$observed ~ xx$Status)
+boxplot(xx$observed ~ xx$Status)
+```
+
+Solved, the boxplot is still printed.
+
+```R
+suppressMessages(suppressWarnings({
+    wilcox.test(xx$observed ~ xx$Status)
+    boxplot(xx$observed ~ xx$Status)
+}))
+```
+
+A similar problem presented itself with the lines righht below: `bidwidth` was not specified and the message with which the system notified you that the default values were used caused problems. The previous solution didn't work, so I specified the `bidwidth`. You could put a specific number but the resulting dot depends on the scale of the plot so the same value (this kind of plot was used 6 times) resulted in widely different dots, some covering the entire image.
+
+```R
+ggplot(xx, aes(x = Status, y = observed, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$observed, na.rm = TRUE)) / 30 # sets the width of the dots in the dotplot, put explitly for reasons regarding Rmarkdown
+    )
+```
