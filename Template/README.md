@@ -2,9 +2,9 @@
 
 Here you find the [Rmarkdown template](template.Rmd) for the sbobina and the [pdf](template.pdf) rendered from it.
 
-1. [Header](header)
-2. [Introduction](introduction)
-3. [Notes and Suggestions](notes-and-suggestions)
+1. [Header](#header)
+2. [Introduction](#introduction)
+3. [Notes and Suggestions](#notes-and-suggestions)
 
 ## Header
 
