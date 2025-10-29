@@ -4,6 +4,7 @@ author: "Fontanilla Natasha, Maiolino Aurelio, Mercadante Marianna"
 date: "22-10-2025"
 output:
   pdf_document:
+    latex_engine: xelatex
     keep_tex: true
     toc: true
     toc_depth: 2
@@ -13,10 +14,15 @@ header-includes:
   - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere=true,commandchars=\\\{\}}
   - \fvset{breaklines=true, breakanywhere=true}
   - \renewcommand{\contentsname}{Index}
-  - \pagestyle{fancy}
-  - \fancyhead[R]{}
-  - \fancyhead[C]{Data Analysis - R Practical 1 - `r rmarkdown::metadata$date` - Fontanilla N., Maiolino A., Mercadante M.}
-  - \fancyfoot[C]{\thepage}
+  - \AtBeginDocument{
+      \pagestyle{fancy}
+      \fancyhead[L]{}
+      \fancyhead[R]{}
+      \fancyhead[C]{Data Analysis - R Practical 1 - 22-10-2025 - Fontanilla N., Maiolino A., Mercadante M.}
+      \fancyfoot[C]{\thepage}
+      \renewcommand{\sectionmark}[1]{}
+      \renewcommand{\subsectionmark}[1]{}
+    }
 ---
 
 \thispagestyle{empty}
@@ -27,224 +33,683 @@ header-includes:
 
 # Introduction
 
-The exrcise was run in a Docker, the image can be pulled from GitHub:
+## Environment
 
-* with JupyterLab
-
-```sh
-docker pull ghcr.io/maiolino-au/data_analysis:v0.1.0
-```
-
-* with Rstudio
+The exrcise was run in a Docker, at the moment only aversion with JupyterLab is available. The image can be pulled from GitHub:
 
 ```sh
-docker pull ghcr.io/maiolino-au/data_analysis:v0.1.1
+docker pull ghcr.io/maiolino-au/data_analysis:latest
 ```
 
-You can run it with (regardless of the version):
+To run it open a terminal in the working directory and run this:
 
 * In Windows
 
 ```powershell
 @echo off
 set "CURRENT_DIR=%cd%"
-docker run -it --rm -p 8787:8787 -v "%CURRENT_DIR%:/sharedFolder" ghcr.io/maiolino-au/data_analysis
+docker run -it --rm -p 8787:8787 -v "%CURRENT_DIR%:/sharedFolder" ghcr.io/maiolino-au/data_analysis:latest
 ```
 
 * In Linux / MacOS
 
 ```sh
-docker run -it --rm -p 8787:8787 -v .:/sharedFolder ghcr.io/maiolino-au/data_analysis
+docker run -it --rm -p 8787:8787 -v .:/sharedFolder ghcr.io/maiolino-au/data_analysis:latest
 ```
 
 Repository link: https://github.com/Maiolino-Au/Data_Analysis
 
-The datas used are availabe at:
+The datas used are availabe in the repository or on moodle.
 
 The scripts assume that the working directory is the same where the data are stored.
 
 \newpage
 
-# ======= Aurelio =======
+## Working directory and Packages
 
-# Title
-text text text
-
-* lista
-* lista
-
-text text text
-
-1. lista numerata
-2. lista numerata
-1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
-
-bisogna mettere una rigavuota tra du cose 
-per far sì che siano
-
-separate
-
-importante 
-* per
-* liste
-
-triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+First of all, we need to set the correct working directory: all the commands assume that the datas are stored in the working directory. I worked in a docker container to which i have shared a directory from my PC, called `/sharedFolder` inside the docker. In the directory there is one specific for this lesson, called `Practical_1`. Therefore:
 
 ```{r, eval=T, echo=T}
-mm <- c("m", "m")
-paste(mm[1], mm[2], sep = " - ")
+setwd("/sharedFolder/Practical_1/")
 ```
 
-una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+Then we need to load the packages we are going to use. I used `suppressPackageStartupMessages()` to avoid printing all the startup messages of each package.
 
 ```{r, eval=T, echo=T}
-paste(mm[1], mm[2], sep = " - ")
+suppressPackageStartupMessages({
+    library(phyloseq)
+    library(dplyr)
+    library(tidyr)
+    library(stringr)
+    library(microbiome)
+    library(microbial)
+    library(vegan)
+    library(usedist)
+    library(ggplot2)
+    library(nortest)
+    library(car)
+})
 ```
-
-
-
-## Subtitle
-
-un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
 
 \newpage
 
-# ci
+# Before we start: Let's look at the files
 
-## sono
+The objective of this first practical lesson is to start a basic analysis regarding 16S data. We are not starting from the real raw data, we alrtedy have the matrix of abbundances, the metadata (the subdivision of the experiments according to different classes), and the taxonomy.
 
-### 6
+The first step is to have a look at the different files
 
-#### livelli
+In R we look at the `phylosec`, able to combine all of these different forms of information: 
 
-##### di 
+* OTUs
+* Abbundances
+* Taxonomy
+* Metadata
+* The phylogenetic tree, not alwais present
 
-###### titoli
+We do not have the tree but you can download the other three files from moodle or the GitHub repository. There are three files for this exercise:
 
-####### :(
+1. `otu.csv`
+2. `metadata.csv`
+3. `taxonomy.csv`
 
-############################ il resto lo considera come un commento
+## The abbundance matrix (otu.csv)
 
-e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+The first the abbundance matrix, very simiilar to the expression matrix. In columns we have the different subjects/samples and in the rows the different OTUs: cluster of reads clustered together according to the similarity (>97%) of their sequences. We basicaclly have build this sovrastructure of reads, and for each of these we have what we call counts: the number of reads assignd to that specific OTU in one specific sample. 
 
-\newpage
-
-# ======= Marianna =======
-
-# Title
-text text text
-
-* lista
-* lista
-
-text text text
-
-1. lista numerata
-2. lista numerata
-1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
-
-bisogna mettere una rigavuota tra du cose 
-per far sì che siano
-
-separate
-
-triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+We need to consider that this kind of experiments are compositional: an certain number in a sample is not equivalent to the same number in another sample, because the total number of counts can be different. For this reason we will need to normalize the data.
 
 ```{r, eval=T, echo=T}
-mm <- c("m", "m")
-paste(mm[1], mm[2], sep = " - ")
+otu <- read.table(file = "otu.csv", sep = ",", header = T, row.names = 1, check.names = FALSE)
+head(otu)
 ```
 
-una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+## Metadata (metadata.csv)
+
+The second file is the metadata, which contains the name of the samples and different categorizations:
+
+* We have the status, which distinguishes the samples in Disease, Healty and Blank. Remember, we use blancks in this kind of experiments to have a control of possible contaminations: in this kind of studies the main problem is the possibility to have a lot of contaminants and the blancks help us to identify them.
+* Another categorization is the Condition: blank or no_blank. The purpouse is to see wether we are able to distinguish blanks from all the other samples, are we able to identify something just in the blank which is so dissimilar from the other ones so that we can use this dissimilarity to clean/prune the information from the real samples according to this contaimnation?
 
 ```{r, eval=T, echo=T}
-paste(mm[1], mm[2], sep = " - ")
+metadata <- read.table(file = "metadata.csv", sep = ",", header = T, row.names = 1)
+metadata
 ```
 
+## Taxonomy (taxonomy.csv)
 
+The third and last file is the taxonomy, which contains the association between a specific OTU and the taxonomical classification. The taxonomy is given as a string with different levels, from the kingdom to the species or even strain, separated by semicolons, for example: `"k__Bacteria; p__Acidobacteria; c__Acidobacteria-6; o__iii1-15; f__Unknown_family; g__Unknown_genus403; s__Unknown_species1"`. 
 
-## Subtitle
+```{r, eval=F, echo=T}
+taxonomy <- read.table(file = "taxonomy.csv", sep = ",", header = T, row.names = 1)
+head(taxonomy) # output not shown due to formatting: Taxon string is too long to display properly
+```
 
-un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
-
-\newpage
-
-# ci
-
-## sono
-
-### 6
-
-#### livelli
-
-##### di 
-
-###### titoli
-
-####### :(
-
-############################ il resto lo considera come un commento
-
-e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+```{r, eval=T, echo=F}
+taxonomy <- read.table(file = "taxonomy.csv", sep = ",", header = T, row.names = 1)
+```
 
 \newpage
 
-# ======= Natasha =======
+# The Phyloseq Object
 
-# Title
-text text text
+We have seen the three different files and now we need to combine them into a single object, the **Phyloseq object**. We need to consider all the information togethere to be able to perform the analysis. For example, the first curiosity that we can have is understanting which are the most abbundant species inside the different samples. But the information we have right now is not sufficient: we need a statistic. Without statistical analysis we cannot state anyting, we can only describe or observe the data.
 
-* lista
-* lista
+## Importing the data
 
-text text text
+The first real steps is to import the data into R. To import the OTUs we used the `read.table` function. This is able to read a generic table and allows you to specify the separator, the header and the row names. The same function was used to import the taxonomy and the metadata, this is a standard step and not specific for this kind of analysis.
 
-1. lista numerata
-2. lista numerata
-1. funziona anche se mettete un numero a caso (nel rendere vedete un 3)
+After importing the data we can have a look at the first lines with the `head()` function. 
 
-bisogna mettere una rigavuota tra du cose 
-per far sì che siano
+```{r, eval=F, echo=T}
+otu <- read.table(
+    file = "otu.csv", # the name and of the file
+    sep = ",", # the separator, this is a file is a csv ("comma-separated values")
+    header = T, # indicates the presence of a header so the first row is not data
+    row.names = 1, # indicates that the first column contains the row names
+    check.names = FALSE # avoid R to change the names of the columns
+)
+```
 
-separate
-
-triplette di backtick per un blocco di codice, singolo backtick per una riga di codice `mm <- c("m", "m")` che potete inerire nel testo. utile per dire "ho usato il comando `paste()` per unire due stringhe"
+Then we isolate the raw names to check if what we have imported is the right file.
 
 ```{r, eval=T, echo=T}
-mm <- c("m", "m")
-paste(mm[1], mm[2], sep = " - ")
+taxa_present <- row.names(otu)
+head(taxa_present)
 ```
 
-una variabile definita in un blocco si salva nel documento e può essere richiamata in blocchi successivi
+## Cleaning the data in prepraration for the Phyloseq Object
+
+After we have imported all the three files we need to prepare them for the analysis.
+
+The taxonomy is provided in the "Greengenes" format. Greengenes is one of the databases of 16S rRNA sequences, it provides taxonomical classification in a specific format: a single string with different levels separated by semicolons. it is usefull to separate them into different columns, one for each taxonomical level. We can use the `separate()` function from the `tidyr` package to do this.
 
 ```{r, eval=T, echo=T}
-paste(mm[1], mm[2], sep = " - ")
+# clean the taxonomy, Greengenes format
+tax <- taxonomy %>%
+    select(Taxon) %>%
+    separate(Taxon, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"), "; ")
+head(tax)
+```
+
+We can notice one of the classical problems of 16S: it is not so specific. we can notice various "Unkwnown" at different taxonomical levels. This is due to the fact that the 16S rRNA gene is not able to distinguish between very similar species, therefore we can have a good classification up to a certain level, but not more specific.
+
+NB: `%>%` is the pipe operator from the `dplyr` package, which allows to chain multiple operations. This operator takes the output of the left-hand side and passes it as the first argument to the function on the right-hand side. Therefore `taxonomy %>% select(Taxon)` is equivalent to `select(taxonomy, Taxon)`.
+
+We have then various cleaning steps to do:
+
+* Remove the prefixes like "k__", "p__", etc.
+
+```{r, eval=T, echo=T}
+tax.clean <- data.frame(
+    row.names = row.names(tax),
+    Kingdom = str_replace(tax[, 1], "k__", ""),
+    Phylum = str_replace(tax[, 2], "p__", ""),
+    Class = str_replace(tax[, 3], "c__", ""),
+    Order = str_replace(tax[, 4], "o__", ""),
+    Family = str_replace(tax[, 5], "f__", ""),
+    Genus = str_replace(tax[, 6], "g__", ""),
+    Species = str_replace(tax[, 7], "s__", ""),
+    stringsAsFactors = FALSE
+)
+tax.clean[is.na(tax.clean)] <- ""
+tax.clean[tax.clean == "__"] <- ""
+head(tax.clean)
+```
+
+* Fill in missing taxonomical levels with "Unclassified <higher level>"
+
+```{r, eval=T, echo=T}
+for (i in 1:nrow(tax.clean)) {
+    if (tax.clean[i, 7] != "") {
+        tax.clean$Species[i] <- paste(tax.clean$Genus[i], tax.clean$Species[i], sep = " ")
+    } else if (tax.clean[i, 2] == "") {
+        kingdom <- paste("Unclassified", tax.clean[i, 1], sep = " ")
+        tax.clean[i, 2:7] <- kingdom
+    } else if (tax.clean[i, 3] == "") {
+        phylum <- paste("Unclassified", tax.clean[i, 2], sep = " ")
+        tax.clean[i, 3:7] <- phylum
+    } else if (tax.clean[i, 4] == "") {
+        class <- paste("Unclassified", tax.clean[i, 3], sep = " ")
+        tax.clean[i, 4:7] <- class
+    } else if (tax.clean[i, 5] == "") {
+        order <- paste("Unclassified", tax.clean[i, 4], sep = " ")
+        tax.clean[i, 5:7] <- order
+    } else if (tax.clean[i, 6] == "") {
+        family <- paste("Unclassified", tax.clean[i, 5], sep = " ")
+        tax.clean[i, 6:7] <- family
+    } else if (tax.clean[i, 7] == "") {
+        tax.clean$Species[i] <- paste("Unclassified ", tax.clean$Genus[i], sep = " ")
+    }
+}
+head(tax.clean)
+```
+
+Now that we have cleaned the taxonomy we can transform the three object in a table format compatible with Phyloseq.
+
+```{r, eval=T, echo=T}
+OTU <- otu_table(as.matrix(otu), taxa_are_rows = TRUE)
+# head(OTU)
 ```
 
 
 
-## Subtitle
+```{r, eval=T, echo=T}
+TAX <- tax_table(as.matrix(tax.clean))
+# head(TAX)
+```
 
-un sottotitolo, o un titolo non passa a una nuova pagina. serve scrivere `\newpage`
+
+
+```{r, eval=T, echo=T}
+SAMPLE <- sample_data(metadata)
+# SAMPLE[, ]
+```
+
+All that remain is to compine the three into a single Phyloseq object.
+
+## Generating the Phyloseq Object
+
+The Phylosec object is created with the `phyloseq()` function, which takes as arguments three elements:
+
+ * The OTU table
+ * The Taxonomy table
+ * The Sample metadata
+
+```{r, eval=T, echo=T}
+# merge the data into a Phyloseq Object
+ps <- phyloseq(OTU, TAX, SAMPLE)
+ps
+```
+
+When we print the content of the phylosec object we can observe varius infromation: we can see that the object is formed by three big elements, the OTU table, the Taxonomy table and the Sample metadata. We can also see reported the macroclassification indide the three tables. 
+
+* The OTU table contains 12 samples and is comprised of 966 different OTUSs. 
+* The metadata (Sample Data) tells us that we have 12 samples (it is important that this number be consistent with the one shonw in the OTUs) and 2 variables or "covariate" (chiamate così perche se costruissimo un modello statistico queste sarebbero le due variabili da utilizzare per detarminare l'output?, non si capisce bene)
+* The Taxonomy table needs to be consistent with the OTU for the number of taxa, and we see that there are the same 966. It also shows 7 taxonomy ranks, these are the 7 to which we have access. From the most generic one, Kindom, which seem obvius considering we are working with bacteria, but we need to remember that we can erroneusly include Archea  or possibly Fungi (less likely, they have a different reference gene, the DS, but they could still be included).
+
+Therefore now we have this first image, we know what was imported into phylosec and how it is organized
 
 \newpage
 
-# ci
+# Plots of Relative Abundance
 
-## sono
+The second step is to plot the relative abbundance that we have in our samples. This is not our last goal, but just a first glimpse into the data to see which are the most abbundant species and genera inside our samples.
 
-### 6
+## Selection of samples and taxa
 
-#### livelli
+The first step is a selection of our samples according to these categories: we want to extract the normal samples and the blanks, for now we are avoiding the disease ones. And we can see how to make a selection according to the phylosec metadata. 
 
-##### di 
+We use the `subset_samples()` function from the `phyloseq` package to select the samples according to the `Status` in the metadata. We select only the samples with `Status` equal to "HEALTHY" or "BLANK", and exclude the "DISEASE" samples.
 
-###### titoli
+```{r, eval=T, echo=T}
+##  library - microbial
+##  Selection by metadata
+psbar1 <- subset_samples(ps, Status == "HEALTHY" | Status == "BLANK")
+metabar1 <- data.frame(sample_data(psbar1))
+metabar1
+```
 
-####### :(
+Then filter against the rows that are all equal to zero. Could it be possible that an entire row contains only zeros? It is very unlikely that an entire transcript is all zero. We build the matrix starting from what we find in the reads and if there is a transcript in the table it means that at least one read should have been found. So why are we doing this? Why are we excluding the rows with only zeros, something that should not be present? Remember we have subletted the data: it is possbile that an OTU is present, but only in the disease samples, while being complitely absent from healty and blank ones. This is the classical case of differential abbundance: when there is a condition characterized by some species totaly absent in other conditions. This would be optimal because, if we have disease with 5 species that are not present in healty or blank (meaning they aren't contaminants) it means we have found an optimal result, that we have found exactly what we need. Thee same works for gene expression: if you see a gene extremly overexpressed in a tumor but practically absent or normal in wt it means you have found something important. 
 
-############################ il resto lo considera come un commento
+But you have to remember, when you analyze the data, of the selection you have made. Dov'è che mi frega se non metto questo check? Ovviamente nella statistica… perché? per due motivi:
 
-e se guardate nell'indice ne mostra solo 2, l'ho impostato nel header con `toc_depth: 2`
+* se ho tutti 0 riesco a fare una statistica? NO -> il sistema si potrebbe piantare li
+* qualora non si piantasse, io aumento tantissimo il numero di n test per cui devo correggere poi, quindi se io posso abbassare il numero di correzioni che devo fare dopo è meglio. Se posso semplificare l'analisi la rende più robusta. Ad esempio con Bonferroni io moltiplico il p value nominale che ho calcolato per il numero di test che ho fatto.
+
+Il mio oggetto phyloseq aveva 966 TAXA, vuol dire che io devo moltiplicare il mio pvalue per 966 (per 1000 praticamente). 0,001 moltiplicato per mille ottengo 1 che non è un buon p value… ma se io scopro, dopo aver pulito per gli 0, che quelli presenti alla fine sono solo più 50, anziché moltiplicare per 1000 , moltiplico per 50… è questo a cui devo fare attenzione!
+
+```{r, eval=T, echo=T}
+# to find taxa that are "really" present in the considered subsection of samples
+dat <- psbar1@otu_table[!apply(psbar1@otu_table, 1, function(x) all(x == 0)), ]
+real_taxa <- row.names(dat@.Data)
+head(real_taxa)
+```
+
+Quindi questa è la riga, puliamo per tutto quello che non è zero, ne sopravvivono alcune, cioè se vediamo con questa pulizia non è che cambia di tanto, sono arrivato a 801… comunque ce n'erano circa 160 che erano presenti solo nei disease, ma non nelle altre categorie.
+
+```{r, eval=T, echo=T}
+psbar2_otu <- psbar1@otu_table[c(real_taxa), ]
+psbar2_taxa <- psbar1@tax_table[c(real_taxa), ]
+SAMPLE1 <- sample_data(metabar1)
+psbar_obj <- phyloseq(psbar2_otu, psbar2_taxa, SAMPLE1)
+psbar_obj
+```
+
+## Normalization
+
+```{r, eval=T, echo=T}
+##  check for the function "normalize"
+##        which method?
+##  method = "relative" argument, calculates relative abundances, which are the proportions of each feature
+##  (like OTUs or ASVs) within a sample.
+##  This method converts raw counts into percentages by dividing each feature's count by the total count
+```
+
+Ora NORMALIZZIAMO. Ma cosa vuol dire normalizzare in questo caso? Abbiamo detto che di default i nostri numeri counts non sono quelli immediatamente utilizzabili, per il problema composizionale. Allora possiamo optare per una normalizzazione… in questo caso normalize è una funzione  all'interno del pacchetto che consente di optare per diverse normalizzazione, quella di default è questa relative, che sostanzialmente è proprio la normalizzazione più basale in assoluto: prendo il numero di counts in uno specifico OTU  e lo divido per quanti counts ha quel sample… quindi è proprio relativa al sample. Per esempio: 50 counts per OTU 1, ne ho 1000 counts su quel sample -> faccio 50/1000.
+
+Ma a questo punto questa frazione diventa comunque comparabile, cioè magari non è la normalizzazione più specifica o più figa, però rende i valori comparabili tra loro. 
+
+```{r, eval=T, echo=T}
+##  for that sample
+phy <- normalize(psbar_obj)
+```
+
+Quindi dopo la normalizzazione, dovremmo ottenere questo plot. Dove abbiamo:
+
+* i nostri 4 + 4 samples (i 4 BLANK e i 4 HEALTHY)
+* abbiamo chiesto a livello di Genus
+* sono riportati i primi 20 generi
+
+Questo ci dà un'idea di cosa ci sia nei nostri samples, e anche di come sono distribuiti. 
+
+Siamo contenti di questo però? Ci basta? No in realtà, però qui manca la statistica… se vediamo infatti il verde in alto (Arcicella) possiamo dire che c'è qualche segnale (c'è una differenza significativa tra i gruppi)? No.
+
+```{r, eval=T, echo=T}
+##  plot by samples
+plotbar(phy, level = "Genus", top = 20)
+```
+
+Sarebbe carino trovassimo in un sample o una classe di sample, che presi i primi 15/10 il 90% è associato a uno specifico genere, perché allora quello ci sta dicendo che quel sample è veramente caratterizzato da quel genere.
+
+Un'altra via di rappresentazione è quella di guardare sempre i generi, ma raggruppati per phylum e in questo caso cosa succede?
+
+```{r, eval=T, echo=T}
+##  plot by taxonomical leyer
+plotbar(phy, level = "Genus", top = 15, group = "Phylum")
+```
+
+Anziché avere i sample abbiamo i phyla diversi, quindi delle macro caratterizzazioni dei nostri batteri e all'interno di questi vediamo come sono suddivisi i nostri phyla.
+
+Per esempio qui vediamo Actinobacteria (viola) che sostanzialmente è solo lui e non ha diversi generi al suo interno e poi ci sono i Bacteroidetes e i Firmicutes che sono un pochino più ricchi. Questo può esser più utile per vedere le classi maggiormente rappresentate e anche al loro interno come sono divise. 
+Se dovessimo fare un' analogia con la gene expression (sulla quale abbiamo più espressione) quale potrebbe essere? Vedere dato un gene quali sono le isoforme presenti, quindi quelle generate da splicing alternativi, quindi non è il gene tp53 che mi interessa, ma quella isoforma specifica per andare a riconoscere le varie isoforme.
+
+# Recap
+
+E' stato richiesto un RECAP logico su ciò che stiamo facendo in generale:
+
+* Ho fatto dei prelievi di microbioma buccale (degli swap) per ognuno di noi 
+* Li ho mandati a sequenziare 
+* Ho fatto un esperimento di 16S 
+* Ho ottenuto dei FASTQ file: per ogni sample ho il mio raw data
+* Di questi raw data sono andato a pulirli (quality control), il trimming, la ricostruzione (non ho fatto il percorso di denoising per arrivare agli ASV (Amplicon Sequence Variants), ma ho fatto una sorta di clustering per ottenere gli OTU (Operational Taxonomic Units). 
+* Ho messo insieme le reads che si assomigliano fino al 97% di confidenza. 
+* Ho costruito gli oggetti che vedevamo prima OTU11, OTU22
+* Alla fine ottengo per ognuno di questi OTU che ho ricostruito (che  per me sono semplicemente delle sequenze nucleotidiche adesso). Quindi in un OTU trovo una sequenza consenso accompagnata da tutte le sequenze che si avvicinano fino al 97% di similarità
+* Quindi vedo se quella sequenza è presente in sample 1, in sample 2, 3 e quanto è rappresentata… cioè quante reads io posso associare a quella sequenza 
+* Questo mi genera questa tabella (otu.csv)
+
+```{r, eval=T, echo=F}
+head(otu)
+```
+
+quindi vediamo che OTU1011 avrà 11 reads associate a disease 1, 103 associate a 103, non ne ha associate a disease 3, ne ha 44 associate a disease 4, ecc…
+
+* Secondo step: ora abbiamo la sequenza consensus diciamo…come faccio a capire che cos'è? Noi sappiamo che deriva da 16S, quindi da una specifica regione (V3-V4) del 16s rRNA dei batteri però non so di quali…
+* Allora devo fare la classificazione tassonomica che mi porta a questo oggetto qui:
+
+```{r, eval=T, echo=F}
+head(taxonomy)
+```
+
+* L'OTU1011 per me è questo: a livello di genere è unknown, a livello di family è unknown, a livello di ordine iniziamo ad avere una prima classificazione
+
+Facciamo un confronto con Blast… Lui prende la sequenza a cui sono interessato e la confronta con un database e come output ci dirà, se è un trascritto ci dirà il gene, se lo faccio con questo tipo di sequenza di 16S mi darà la specie. In che cosa questo tipo di approccio (quello che stiamo facendo noi) è più potente? Cioè richiede uno sviluppo non immediato. Non è scontato infatti quello che fa: qui ci sta dicendo ok la specie non la conosco, non conosco neanche il genere, non conosco neanche la famiglia, ma finalmente arrivando all'ordine e finalmente ho un riscontro. 
+
+Quindi cosa ha fatto questo classificatore? E' scontato dire non conosco né specie, né genere, né famiglia, ma ti so dire qualcosa sull'ordine..cosa ha dovuto fare?
+
+Dovete immaginare che un genere ha sotto 100 specie, ma questo genere con altri 50 generi, fa parte di una famiglia, questa famiglia (che ha 50 generi e ognuno di questi ha 100 specie) appartiene con altre 70 famiglie a un ordine. Quindi vuol dire che all'interno di quell'ordine io ho potenzialmente centinaia se non migliaia di specie diverse, vuol dire che se lui me lo affibbia a quell'ordine, hai idea di quale pazzesca estrazione ha dovuto fare? 
+
+Blast questo non può farcelo, perchè lui ragiona sulla singola sequenza della singola specie, se la trova bene me la da (e me ne trova tantissime di solito), ma qui la potenzialità è che io risalgo all'interno dell'albero filogenetico e per ognuno di questi livelli ho il consensu di quello specifico gene. E' questa la potenzialità del nostro sistema. 
+
+Ovvio è che a ogni classificazione tassonomica è associata una confidenza, cioè c'è sempre uno score che va da 0 a 1… più è vicino a 1 e più sono contento. In alcuni casi queste associazioni sono con uno score dello 0,62, ma noi ci fidiamo di uno score 0,62? NO. Quindi per quanto sia potente e specifico in questa costruzione, non è detto che sia buona. 
+
+Ecco questo è un aspetto che è meno sentito nella gene expression, perchè di fatto quando riesco a dire che quello è il gene, il trascritto e anche l'isoforma specifica, difficilmente sto proprio sbagliando o quanto meno se una read è così brutta l'avrei già persa molto prima, quindi difficilmente arrivo qui. 
+
+Ma qui ho ancora un check che posso fare e posso tagliare e di tanto… perché io magari partivo da 1000 OTU caratterizzati, faccio la classificazione tassonomica e d aquella vado a tagliare quello che secondo me è troppo brutto e magari vado a tagliare del 50%. Quindi dai 1000 già solo per la classificazione tassonomica passo a 500. Quindi questo è un pochino quello che stavamo facendo…
 
 \newpage
+
+# Alpha and Beta Diversity
+
+L'altro step importante è quello di fare una seconda caratterizzazione generale: l'**alpha diversity**. L'alpha diversity è sostanzialmente un numero fissato per ogni soggetto che dice qual è la complessità dal punto di vista dei TAXA presenti e di quanto sono abbondanti nei vari sample. 
+
+```{r, eval=T, echo=T}
+alpha <- suppressMessages(microbiome::alpha(ps, index = "all"))
+head(alpha)
+```
+
+Con quell' “all” noi diciamo ad R di calcolarci tutte le possibili alpha diversity, che se vedete non sono neanche poche. Gli observed sono il numero di OTU che riusciamo ad associare, vediamo che c'è chao1, simpson, shannon ecc..
+Ma cosa vuol dire quel 224?
+
+Vuol dire che il sample disease 1 è caratterizzato da 224 OTU che hanno un valore di abbondanza superiore a 1. Chao1 è molto simile ovvero aggiusta l'abbondanza del numero puro attraverso il conteggio di quanti singleton e doubleton ci sono, cioè quanti Otu con valori 1 o 2 ci sono. Perché il problema è sempre questo se io trovo un OTU presente con una sola read associata, mi posso fidare? Dipende…o è un errore clamoroso oppure ho proprio trovato una giusta osservazione.
+
+Chi ce lo dice? In questo caso ci aiuta le varie confidenze.. la qualità della read che ho sequenziato, l'associazione tassonomica e il relativo score di confidenza. Quindi il chao1 spessissimo è uguale, ma per esempio nel disease 2 c'è almeno un OTU o due che hanno valore 1 di abbondanza e quindi fanno sì che questo aggiusti leggermente il valore di alpha diversity per questo sample.. mentre gli altri sono uguali se notate (224->224, 49->49, 237-> 237).
+
+```{r, eval=T, echo=T}
+aa <- merge(alpha, metadata,
+    by = "row.names", all = TRUE
+)
+# head(aa)
+```
+
+Ma una volta ottenute le nostre alpha diversity cosa dobbiamo fare? 
+
+Dobbiamo associare i **metadati**, ma prima di ciò il prof ha fatto una specie di giochetto in cui ha trasformato la tabella di abbondanza (ps) in forma composizionale.
+
+```{r, eval=T, echo=T}
+# Use relative abundance data
+ps1 <- microbiome::transform(ps, "compositional")
+
+# Pick core taxa
+ps1 <- core(
+    ps1,
+    detection = 0.001, # sets the minimum abundance threshold. 0 means that a taxon is considered "detected" even if it appears at any nonzero abundance.
+    prevalence = 60 / 100 # sets the prevalence threshold, i.e. the minimum fraction of samples in which a taxon must be detected to be considered part of the core.
+)
+```
+
+Chiediamo quindi di trasformare i nostri OTU con la loro abbondanza in counts come se fossero delle frazioni. Prima abbiamo usato "normalize" che era già una prima forma.
+
+Qui quello che succede è che noi andiamo a struttura con una sorta di analisi delle componenti principali i nostri sample, ma con questa richiesta: abbiamo selezionato gli OTU che hanno 
+
+* detection = 0.001, 
+* prevalence = 60/100
+
+Dove la detection è il livello di abbondanza relativa/composizionale che deve avere nel sample che io considero (sotto quello è come se non ci fosse) e poi la prevalence che è la percentuale di campioni in cui questo avviene. 
+
+Questo (ovvero la richiesta di una % di prevalenza con almeno un minimo di livello di abbondanza relativa) ci riporta verso a quel concetto che avevamo visto? Vi ricordate quali sono i due livelli del microbioma di cui parlavamo? C'è il **core** e il **transiente**. Con questa richiesta cerchiamo di isolare la porzione del microbioma più robusta, cioè quella presente in tutti i campioni. Sorge però una domanda importante: chi mi garantisce che c'è un core microbiota tra tutto inclusi i “blank”? Il concetto di “core microbiome” deve essere definito in modo operativo, a seconda del contesto sperimentale. Ad esempio, possiamo chiederci: esiste un “core microbiome” del soggetto sano? La risposta non è scontata. Dal Human Microbiome Project abbiamo imparato che dall'analisi di tanti tessuti diversi, il contesto del “sano”  ha senso se il contesto è ben definito. Nel caso del microbiota intestinale, una persona sana può avere un core microbiome condiviso, ma fattori come stile di vita e dieta influenzano fortemente la composizione. C'è una componente di microbioma del host che interagisce con tutto il microbioma esterno ed è in grado di coevolvere. La coevoluzione indica che il microbioma cambia da persona a persona. Per questo motivo i metadati sono fondamentali: permettono di distinguere correttamente le classi di campioni e interpretare la variabilità biologica.
+
+Noi qui abbiamo fatto una selezione di dati di questo tipo e siamo arrivati ad ottenere questo plot. Riusciamo a clusterare i samples in questo spazio virtuale multidimensionale. Come possiamo commentare questo risultato?
+
+```{r, eval=T, echo=T}
+# Illustrate sample similarities with PCoA (NMDS)
+plot_landscape(ps1, "NMDS", "bray", col = "Status")
+```
+
+Ce n'è un campione molto diverso, appartenente al gruppo DISEASE, mentre tutti gli altri risultano raggruppati altrove. Inoltre, ci sono altri DISEASE che non cadono come gli altri, vi è una sorta di finto cluster dove abbiamo gli HEALTHY e i BLANK e insieme a tre DISEASE. Non è un risultato brutto, colpisce perché in qualche modo i DISEASE hanno una variabilità molto alta, mentre gli altri sono tutti assieme li. 
+
+Dobbiamo pensare a come caratterizzare la variabilità interna che è un aspetto fondamentale e legata all'alpha diversity. L'alpha diversity misura la ricchezza , l'abbondanza e l'eveness (ovvero come i nostri campioni si stanno comportando) delle specie presenti nei campioni. Ci aspettiamo che la variabilità interna dei DISEASE sia maggiore rispetto agli altri gruppi. Va inoltre considerato il **numero di samples**: in questo caso solo 4 per il gruppo DISEASE, quindi con un **potere statistico ridotto**.
+
+Qua possiamo vedere la differenza tra matrice originaria (basata sui counts) e trasformata in matrice composizionale (abbondanze normalizzate OTU). Questa trasformazione serve per **normalizzare i dati** e consentire **confronti significativi** tra campioni.
+
+```{r, eval=F, echo=F}
+head(ps@otu_table)
+head(ps1@otu_table)
+```
+
+\newpage
+
+# HEALTHY_HAIR or HEALTHY_CSF and NO_BLANK
+
+Ora inizia a subsettare/selezionare un sottoinsieme di samples con condizione NO_BLANK che sono i DISEASE e HEALTHY. Se andate a vedere il metadata, nel campo “Condition “ indica se un campione è “ BLANK” o “NO_BLANK”. Scegliendo “NO_BLANK”  vedete i DISEASE e HEALTHY, isolando i campioni di interesse. 
+
+```{r, eval=T, echo=T}
+xx <- subset(aa, Condition == "NO_BLANK")
+# head(xx)
+# tail(xx)
+```
+
+Che test posso effettuare? Posso fare un WILCOXON test che consente di confrontare due gruppi indipendenti (HEALTHY vs DISEASE) e fornisce il p-value , evidenziando le differenza tra gruppi nell'alpha diversity (definita dagli “observed”).
+
+```{r, eval=T, echo=T}
+### observed
+suppressMessages(suppressWarnings({
+    wilcox.test(xx$observed ~ xx$Status)
+    boxplot(xx$observed ~ xx$Status)
+}))
+```
+
+Il boxplot mostra la variabilità di cui parlavamo prima. Vediamo una dispersione dei DISEASED? A metà, in realtà nei DISEASED c'è una sorta di outlier che sembra governare tutto (in basso, isolato). Se perdessimo questo outlier DISEASED (in basso, isolato), vedete come sono compatti gli altri 3. A differenza, gli HEALTHY mantengono una loro variabilità intrinseca. 
+
+```{r, eval=T, echo=T}
+ggplot(xx, aes(x = Status, y = observed, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$observed, na.rm = TRUE)) / 30 # sets the width of the dots in the dotplot, put explitly for reasons regarding Rmarkdown
+    )
+```
+
+Se faccio la stessa cosa sullo Shannon guardo il p-value (0,34 che è lontano dalla significatività di 0,05), guardo la distribuzione dei pallini cambia un po'. La differenza tra “observed” e “Shannon” è che:
+
+* Observed --> misura la richness (numero di OTU/specie presenti);
+* Shannon --> considera anche la evenness, cioè la distribuzione relativa delle abbondanze.
+
+In questo modo vediamo che i HEALTHY  sono molto più raggruppati : l'abbondanza relativa fa sì che ci sia meno dispersione nei normali.
+
+```{r, eval=T, echo=T}
+### diversity_shannon
+suppressMessages(suppressWarnings({
+    wilcox.test(xx$diversity_shannon ~ xx$Status)
+    boxplot(xx$diversity_shannon ~ xx$Status)
+}))
+
+ggplot(xx, aes(x = Status, y = diversity_shannon, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$diversity_shannon, na.rm = TRUE)) / 30
+    )
+```
+
+Se guardiamo SIMPSON, i risultati si avvicinano agli observed.
+
+```{r, eval=T, echo=T}
+### diversity_inverse_simpson
+suppressMessages(suppressWarnings({
+    wilcox.test(xx$diversity_inverse_simpson ~ xx$Status)
+    boxplot(xx$diversity_inverse_simpson ~ xx$Status)
+}))
+
+ggplot(xx, aes(x = Status, y = diversity_inverse_simpson, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$diversity_inverse_simpson, na.rm = TRUE)) / 30
+    )
+```
+
+Dovessimo aggiungere un test da valutare, quale sceglieremmo? Prima, abbiamo considerato la richness e eveness. Un test possibile è basato sulla distanza filogenetica ma non possiamo farla perché non abbiamo il dato. Vi ricordate il plot che riporta le correlazioni tra i vari alpha? Potremmo sceglierne una o due in più che sono completamente scorrelate tra questi due per avere una prospettiva diversa. 
+
+```{r, eval=T, echo=T}
+##########################
+###   question: run the statistics without excluding any sample
+###   which is the test?
+###   kruskal.test(A ~ B, data = data)
+###   pairwise.wilcox.test(data$A, data$B, p.adjust.method = "BH")
+##########################
+
+###########
+### ALPHA on COMPOSITIONAL DATA
+##########
+ps_c <- microbiome::transform(ps, "compositional")
+alpha_c <- microbiome::alpha(ps_c, index = "all")
+head(alpha_c)
+```
+
+
+
+```{r, eval=T, echo=T}
+aa_c <- merge(alpha_c, metadata,
+    by = "row.names", all = TRUE
+)
+head(aa_c)
+```
+
+
+
+```{r, eval=T, echo=T}
+###########
+### HEALTHY_HAIR or HEALTHY_CSF and NO_BLANK
+##########
+xx_c <- subset(aa_c, Condition == "NO_BLANK")
+head(xx_c)
+tail(xx_c)
+```
+
+
+
+```{r, eval=T, echo=T}
+### observed
+suppressMessages(suppressWarnings({
+    wilcox.test(xx_c$observed ~ xx_c$Status)
+    boxplot(xx_c$observed ~ xx_c$Status)
+}))
+```
+
+
+
+```{r, eval=T, echo=T}
+ggplot(xx_c, aes(x = Status, y = observed, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$observed, na.rm = TRUE)) / 30
+    )
+```
+
+
+
+```{r, eval=T, echo=T}
+### diversity_shannon
+suppressMessages(suppressWarnings({
+    wilcox.test(xx_c$diversity_shannon ~ xx_c$Status)
+    boxplot(xx_c$diversity_shannon ~ xx_c$Status)
+}))
+```
+
+
+
+```{r, eval=T, echo=T}
+ggplot(xx_c, aes(x = Status, y = diversity_shannon, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$diversity_shannon, na.rm = TRUE)) / 30
+    )
+```
+
+
+
+```{r, eval=T, echo=T}
+### diversity_inverse_simpson
+suppressMessages(suppressWarnings({
+    wilcox.test(xx_c$diversity_inverse_simpson ~ xx_c$Status)
+    boxplot(xx_c$diversity_inverse_simpson ~ xx_c$Status)
+}))
+```
+
+
+
+```{r, eval=T, echo=T}
+ggplot(xx_c, aes(x = Status, y = diversity_inverse_simpson, fill = Status)) +
+    geom_boxplot() +
+    geom_dotplot(
+        binaxis = "y", stackdir = "center",
+        binwidth = diff(range(xx$diversity_inverse_simpson, na.rm = TRUE)) / 30
+    )
+```
+
+
+
+```{r, eval=T, echo=T}
+### Core microbiota
+# Transform to compositional abundances
+pseq.rel <- microbiome::transform(ps, "compositional")
+```
+
+
+
+```{r, eval=T, echo=T}
+# Pick the core (>0.1% relative abundance in >50% of the samples)
+pseq.core <- core(pseq.rel, detection = 0.1 / 100, prevalence = 50 / 100)
+pseq.core
+```
+
+
+
+```{r, eval=T, echo=T}
+# Core with compositionals:
+prevalences <- seq(.05, 1, .05)
+```
+
+
+
+```{r, eval=T, echo=T}
+detections <- round(10^seq(log10(5e-3), log10(.2), length = 10), 3)
+```
+
+
+
+```{r, eval=T, echo=T}
+p <- plot_core(pseq.rel,
+    plot.type = "heatmap",
+    prevalences = prevalences, detections = detections, min.prevalence = 0.5
+) +
+    xlab("Detection Threshold (Relative Abundance)") +
+    theme(axis.text.x = element_text(size = 9))
+print(p)
+```
+
+
