@@ -4,7 +4,7 @@ To download the docker:
 
 ```sh
 docker pull ghcr.io/maiolino-au/data_analysis:latest
-
+```
 
 Remember: uses port 8787
 
