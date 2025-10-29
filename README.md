@@ -8,7 +8,7 @@ docker pull ghcr.io/maiolino-au/data_analysis:latest
 
 Remember: uses port 8787
 
-Run the docker you downloaded (regardless of the version):
+Run the docker you downloaded:
 * on Windows
 
 ```cmd
