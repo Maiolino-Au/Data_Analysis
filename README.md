@@ -2,7 +2,7 @@
 
 Practical lesson held by professor [Ugo Ala](https://www.molecularbiotechnology.unito.it/do/docenti.pl/Show?_id=uala#tab-profilo) for the module "Advanced data analysis for biological processes" of the course "Advanced Chemical and Bioinformatics Aapproaches for Health Sciences ", Master's Degree in [Molecular Biotechnology](https://www.molecularbiotechnology.unito.it/do/home.pl) at the [University of Turin](https://www.unito.it/).
 
-Practical 1 (22/10/2025) curated by:
+[Practical 1](Practical_1/Data_analysis_R_1.pdf) (22/10/2025) curated by:
 * Fontanilla Natasha
 * Maiolino Aurelio
 * Mercadante Marianna
