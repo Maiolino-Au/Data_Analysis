@@ -32,7 +32,8 @@ RUN R -e "install.packages('IRkernel')" && \
 
 RUN R -e "install.packages(c('systemfonts', 'textshaping', 'ragg', 'pkgdown', 'devtools', 'dplyr', 'ggplot2', 'data.table', 'future', 'cowplot', 'remotes', 'R.utils', 'dplyr', 'rtracklayer', 'tinytex'))" 
 RUN R -e "devtools::install_github('jbisanz/qiime2R')"
-RUN R -e "install.packages(c('microbiome', 'microbial', 'usedist', 'nortest', 'car'))"
+RUN R -e "install.packages(c('microbiome', 'usedist', 'nortest', 'car'))"
+RUN R -e "BiocManager::install('microbial')"
 RUN R -e "devtools::install_github('microbiome/microbiome')"
 RUN R -e "tinytex::install_tinytex()"
 
