@@ -25,6 +25,8 @@ header-includes:
     }
 ---
 
+
+
 \thispagestyle{empty}
 
 \newpage
@@ -512,6 +514,8 @@ xx <- subset(aa, Condition == "NO_BLANK")
 
 Che test posso effettuare? Posso fare un WILCOXON test che consente di confrontare due gruppi indipendenti (HEALTHY vs DISEASE) e fornisce il p-value , evidenziando le differenza tra gruppi nell'alpha diversity (definita dagli “observed”).
 
+Nota: `suppressMessages(suppressWarnings({}))` è stato aggiunto poichè l'output delle cue funzioni conteneva caratteri non riconosiuti dal renderer di LaTex (usato da Rmarkdown). Nella repository su GitHub è presente un file di JupyterLab (`Practical_1/Steps.ipynb`) in cui sono visibili anche tutti gli output.
+
 ```{r, eval=T, echo=T}
 ### observed
 suppressMessages(suppressWarnings({
@@ -572,6 +576,21 @@ ggplot(xx, aes(x = Status, y = diversity_inverse_simpson, fill = Status)) +
 
 Dovessimo aggiungere un test da valutare, quale sceglieremmo? Prima, abbiamo considerato la richness e eveness. Un test possibile è basato sulla distanza filogenetica ma non possiamo farla perché non abbiamo il dato. Vi ricordate il plot che riporta le correlazioni tra i vari alpha? Potremmo sceglierne una o due in più che sono completamente scorrelate tra questi due per avere una prospettiva diversa. 
 
+Vorrei farvi notare che quando abbiamo calcola il primo WILCOXON sugli observed dice: 
+
+`Warning message in wilcox.test.default(x = DATA[[1L]], DATA[[2L]], ...): "cannot compute exact p-value with ties"` 
+
+(Questo era uno dei messaggi che fanno fallire il render: ho dovuto riscriverlo manualmente, facendo copia incolla dall'output della funzione il render da errore)
+
+Perchè dice questo? Il motivo per cui dice questo è perché si basa sul ranking e se ho tanti punti pari merito, occupano lo stesso rank.
+
+Il messaggio “cannot compute exact p-value with ties” compare perché ci sono valori identici (ties) nel dataset. Il test di Wilcoxon si basa sui ranghi: se più valori sono uguali, condividono lo stesso rango, rendendo impossibile calcolare un p-value esatto.
+
+
+Per esempio, se ho 5 corridori che arrivano nello stesso istante, allora ho 5 posti pari merito. Non so chi sia il vincitore e qui è la stessa cosa: devo prendere quale specie si trovano nella stessa posizione e ne tanti specie che hanno lo tesso valore, non so chi mettere prima o dopo nel ranking. Dobbiamo ricordarci di questa problematica.
+
+## Exercise
+
 ```{r, eval=T, echo=T}
 ##########################
 ###   question: run the statistics without excluding any sample
@@ -579,7 +598,27 @@ Dovessimo aggiungere un test da valutare, quale sceglieremmo? Prima, abbiamo con
 ###   kruskal.test(A ~ B, data = data)
 ###   pairwise.wilcox.test(data$A, data$B, p.adjust.method = "BH")
 ##########################
+```
 
+Qui avete un esercizietto. 
+
+Mi domando se le 3 condizioni  DISEASE, HEALTHY and BLANK sono diversi tra di loro secondo gli observed, shannon e simpson? Uso la stessa strategia ma devo cambiare test. Non utilizzerò piu il Wilcoxon test  che è su 2 gruppi, ma utilizzerò il Kruskal-Wallis test che considera da 3 gruppi in su. La problematica di avere 3 gruppi rispetto a 2 dal punto di vista delle analisi: 
+
+* Se ho 2 gruppi -> capisco in quale dei due gruppi c'è un segnale maggiore (es. alpha maggiore nei diseased).
+* Se ho 3 gruppi ->  ho i gruppi  DISEASE, HEALTHY and BLANK  e un p-value significativo di 0,01 e c'è una differenza in Shannon. Il test non ci dice quale è il gruppo/i che differiscono quindi dobbiamo fare questo pairwise comparison (seconda riga). 
+
+La pairwise comparison farà tutti i confronti a coppie possibili e mi dice quali sono quelli significativi. La pairwise Wilcoxon test farà : 
+
+* DISEASE vs HEALTHY
+* DISEASE vs BLANK
+* HEALTHY vs BLANK
+
+Accade la stessa cosa con la gene expression TUMOR, METASTASIS, HEALTHY (3 gruppi). Se ho la gene expression su tre, il p-value che ottengo è globale indipendentemente dal test (DSeq2/ANOVA  ecc) che uso. Per sapere la condizione o le condizioni importanti, si devono fare confronti a coppie. 
+
+La stessa cosa accade su quella composizionale. Non si parte dalla matrice con i counts, ma da quella trasformata per vedere se e come cambia.
+
+
+```{r, eval=T, echo=T}
 ###########
 ### ALPHA on COMPOSITIONAL DATA
 ##########
@@ -671,7 +710,7 @@ ggplot(xx_c, aes(x = Status, y = diversity_inverse_simpson, fill = Status)) +
     )
 ```
 
-
+Questa analisi seleziona gli OTU presenti con un'abbondanza relativa >0,1% in almeno il 50% dei campioni, identificando così il core microbiota.
 
 ```{r, eval=T, echo=T}
 ### Core microbiota
@@ -700,6 +739,11 @@ prevalences <- seq(.05, 1, .05)
 detections <- round(10^seq(log10(5e-3), log10(.2), length = 10), 3)
 ```
 
+Ora vado a far plottare questa struttura dove mi isola gli OTU che a seconda del threshold di abbondanza relativa che mi riferisco rispetto alla prevalenza sui sample che sto studiando, quali sono quelli che rimangono. Qui c'è un bilancio, se è sufficiente un 0,05% o 0,10% e se la prevalenza è superiore 50%, vediamo come il numero di OTU che rappresenta il core diventa più piccolo. Se aumento la prevalenza di abbondanza richiesta e vedo la distribuzione di prevalenza diminuire e trovo in pochissimo sample. Se chiedo un livello di detection meno rigido, il mio core microbiota è più popolato. Quando noi leggiamo un lavoro dobbiamo:
+
+* Vedere  “i paletti” (threshoholds/ cut-offs) che avete messo per ottenere i dati.
+* Vedere come sono espressi i dati 
+* Appuntare  tutte le scelte 
 
 
 ```{r, eval=T, echo=T}
