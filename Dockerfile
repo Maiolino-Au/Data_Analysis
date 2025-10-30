@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y apt-transport-https ca-certificates cur
 RUN apt-get update && apt install -y libudunits2-dev libgdal-dev
 RUN apt-get update && apt-get -y install gfortran build-essential fort77 xorg-dev liblzma-dev libblas-dev gfortran gobjc++ aptitude libbz2-dev libpcre3-dev
 RUN aptitude -y install libreadline-dev
-RUN apt-get -y install libcurl4-openssl-dev build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+RUN apt-get -y install libcurl4-openssl-dev
+RUN apt install -y build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common dirmngr gpg curl build-essential \
     libcurl4-openssl-dev build-essential libcurl4-openssl-dev libssl-dev \
