@@ -1,4 +1,4 @@
-FROM satijalab/seurat:v5.0.0
+FROM satijalab/seurat
 
 RUN apt-get update && apt-get -y install gdebi-core wget
 RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
