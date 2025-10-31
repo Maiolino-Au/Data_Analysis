@@ -36,6 +36,7 @@ RUN R -e "install.packages(c('microbiome', 'usedist', 'nortest', 'car'))"
 RUN R -e "BiocManager::install('microbial')"
 RUN R -e "devtools::install_github('microbiome/microbiome')"
 RUN R -e "tinytex::install_tinytex()"
+RUN R -e "tinytex::tlmgr_install('grffile')"
 
 
 
