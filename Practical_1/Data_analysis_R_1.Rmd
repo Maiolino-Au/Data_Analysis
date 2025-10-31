@@ -354,7 +354,9 @@ Ma a questo punto questa frazione diventa comunque comparabile, cioè magari non
 
 ```{r, eval=T, echo=T}
 ##  for that sample
-phy <- normalize(psbar_obj)
+phy <- suppressMessages(suppressWarnings({
+    normalize(psbar_obj)
+}))
 ```
 
 Quindi dopo la normalizzazione, dovremmo ottenere questo plot. Dove abbiamo:
